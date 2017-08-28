@@ -2,7 +2,7 @@ package agentecoletor;
 
 /**
  *
- * @author 10100335
+ * @author BrunoPaz e MarlonFontoura
  */
 
 public class Agente {
