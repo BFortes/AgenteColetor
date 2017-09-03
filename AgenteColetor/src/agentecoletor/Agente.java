@@ -44,4 +44,16 @@ public class Agente {
             break;
         }
     }
+    
+    public int[] getPosicao(){
+        return m_pos;
+    }
+    
+    public int getPosicaoI(){
+        return m_pos[0];
+    }
+    
+    public int getPosicaoJ(){
+        return m_pos[1];
+    }
 }
