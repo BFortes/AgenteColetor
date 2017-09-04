@@ -7,10 +7,10 @@ package agentecoletor;
 
 public class Agente {
     
-    enum EstadosAgente { Ocioso, Andando, AndandoUltimaCelulaVisitada, 
-                         VisitandoCelula, RecolhendoLixo, JogandoLixoFora, 
-                         Recarregando
-                       }
+    public enum EstadosAgente { Ocioso, Andando, AndandoUltimaCelulaVisitada, 
+                                VisitandoCelula, RecolhendoLixo, JogandoLixoFora, 
+                                Recarregando
+                              }
     
     private EstadosAgente m_estadoAtual;
     

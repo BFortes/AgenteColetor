@@ -28,7 +28,10 @@ public class Main {
        posicaoInicialAgente = new int[2];
        posicaoInicialAgente[0] = 0;//linha
        posicaoInicialAgente[1] = 0;//coluna
-       Ambiente ambiente = new Ambiente(12, posicaoInicialAgente, 5, 7);
+       
+       Agente agente = new Agente(posicaoInicialAgente, 100, 100);
+       
+       Ambiente ambiente = new Ambiente(agente, 12, 5, 7);
     }
     
 }
