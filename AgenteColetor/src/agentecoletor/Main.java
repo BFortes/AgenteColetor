@@ -24,7 +24,11 @@ public class Main {
         
         Ambiente ambiente = new Ambiente(tamanho, new int[]{0, 0}, lixeiras, recarga);
         */        
-        Ambiente ambiente = new Ambiente(12, new int[]{0, 0}, 5, 7);
+       int[] posicaoInicialAgente;
+       posicaoInicialAgente = new int[2];
+       posicaoInicialAgente[0] = 0;//linha
+       posicaoInicialAgente[1] = 0;//coluna
+       Ambiente ambiente = new Ambiente(12, posicaoInicialAgente, 5, 7);
     }
     
 }

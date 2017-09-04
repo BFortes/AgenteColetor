@@ -17,6 +17,7 @@ public class Ambiente {
 
     public Ambiente(int tamanho, int[]posAgente, int qtdLixeiras, int qtdRecargas) {
         
+       
         this.tamanho = tamanho;
         this.qtdLixeiras = qtdLixeiras;
         this.qtdRecargas = qtdRecargas;
@@ -30,10 +31,6 @@ public class Ambiente {
         System.out.print("Células com Lixo: " + totalCelulasLixo + "\n");
         
         m_matriz = new Nodo[tamanho][tamanho];
-        
-        jamesBond = new Agente(posAgente,100,100);
-        //m_matriz[posAgente[0]][posAgente[1]].setTipo(EstadosNodo.agente);
-        //colocar agente, ta dando Exception nessa porra
         
         for(int i = 0; i < tamanho; i++) { //i: linha, j: coluna
             
@@ -67,7 +64,13 @@ public class Ambiente {
         }
         colocarLixeiras();
         colocarRecargas();
+        
+        jamesBond = new Agente(posAgente,100,100);
+        m_matriz[posAgente[0]][posAgente[1]].setTipo(EstadosNodo.agente);
+        
         desenhaAmbiente();
+        
+        
     }
     
     public void desenhaAmbiente(){
