@@ -1,4 +1,5 @@
 package agentecoletor;
+import java.util.PriorityQueue;
 
 /**
  *
@@ -59,5 +60,12 @@ public class Agente {
   public int getPosicaoJ() {
 
     return m_pos[1];
+  }
+  
+  public int[] A_Star() {
+  
+    //PriorityQueue<Nodo> listaAberta = new PriorityQueue<>(
+    
+    return new int[] {};
   }
 }

@@ -15,15 +15,16 @@ public class Nodo {
   private int m_custoH;
   private int m_custoF;
 
-  public Nodo (EstadosNodo estado){
+  private int[] m_posicao;
+  
+  public Nodo (int[] pos){
 
-    SetEstado(estado);
+    m_posicao = pos;
+    
+    SetEstado(EstadosNodo.celulaVazia);
   }
 
   public void SetEstado(EstadosNodo novoEstado) {
-
-    if(m_estado == novoEstado)
-      return;
 
     m_estado = novoEstado;
 
@@ -38,11 +39,21 @@ public class Nodo {
     }
   }
 
+  public int[] GetPos() {
+  
+    return m_posicao;
+  }
+  
   public boolean estaVazio() {
-
+ 
     return m_estado == EstadosNodo.celulaVazia;
   }
 
+  public boolean ehParede() {
+  
+    return m_estado == EstadosNodo.parede;
+  }
+  
   public void SetCusto(int custoG, int custoH) {
 
     m_custoG = custoG;
