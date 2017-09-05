@@ -11,7 +11,7 @@ import java.util.List;
 public class Ambiente {
 
   private Nodo[][] m_matriz;
-  private int tamanho, qtdLixeiras, qtdRecargas;
+  private int tamanho, qtdLixeiras, qtdRecargas, totalLixo;
   private Agente jamesBond;
 
   public Ambiente(Agente agente, int tamanho, int qtdLixeiras, int qtdRecargas) {
@@ -28,6 +28,8 @@ public class Ambiente {
     int totalCelulasLixo = (int)( (tamanho*tamanho) * (qtdLixoPorcentagem/100));
     System.out.print("Células com Lixo: " + totalCelulasLixo + "\n");
 
+    totalLixo = totalCelulasLixo;
+    
     m_matriz = new Nodo[tamanho][tamanho];
 
     for(int i = 0; i < tamanho; i++) { //i: linha, j: coluna
@@ -70,6 +72,11 @@ public class Ambiente {
     desenhaAmbiente();    
   }
 
+  public boolean AmbienteLimpo() {
+  
+    return totalLixo == 0;
+  }
+  
   public void colocarLixeiras() {
     
     // System.out.print("Número de lixeiras: " + qtdLixeiras + "\n");
@@ -151,14 +158,14 @@ public class Ambiente {
 
         nodosAdjascentes.add(m_matriz[posicaoI+1][posicaoJ-1]);
       }
-      if (posicaoJ != tamanho) {//se não está ultima coluna, tem nodos em cima a direita 
+      if (posicaoJ != tamanho-1) {//se não está ultima coluna, tem nodos em cima a direita 
         
         nodosAdjascentes.add(m_matriz[posicaoI+1][posicaoJ+1]);
       }
     }
 
     //nodos inferiores
-    if (posicaoI != tamanho) {//se não está na ultima linha, tem nodos embaixo
+    if (posicaoI != tamanho-1) {//se não está na ultima linha, tem nodos embaixo
       
       nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ]);
       
@@ -166,7 +173,7 @@ public class Ambiente {
         
           nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ-1]);
       }
-      if (posicaoJ != tamanho) {//se não está ultima coluna, tem nodos embaixo a direita 
+      if (posicaoJ != tamanho-1) {//se não está ultima coluna, tem nodos embaixo a direita 
         
           nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ+1]);
       }

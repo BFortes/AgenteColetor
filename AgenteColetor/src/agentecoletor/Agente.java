@@ -1,5 +1,7 @@
 package agentecoletor;
 import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -62,7 +64,19 @@ public class Agente {
     return m_pos[1];
   }
   
-  public int[] A_Star() {
+  public List<String> Random_path(Ambiente ambiente) {
+  
+    List<String> movimentos = new ArrayList<>();
+    
+    while(!ambiente.AmbienteLimpo()) {
+    
+      
+    }
+    
+    return movimentos;
+  }
+  
+  public int[] A_Star_path() {
   
     //PriorityQueue<Nodo> listaAberta = new PriorityQueue<>(
     

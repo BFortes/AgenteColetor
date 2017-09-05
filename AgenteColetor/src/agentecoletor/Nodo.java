@@ -44,6 +44,14 @@ public class Nodo {
     return m_posicao;
   }
   
+  public boolean bloqueado() {
+    
+    return m_estado == EstadosNodo.agente 
+        || m_estado == EstadosNodo.parede
+        || m_estado == EstadosNodo.lixeira
+        || m_estado == EstadosNodo.recarga;
+  }
+  
   public boolean estaVazio() {
  
     return m_estado == EstadosNodo.celulaVazia;
