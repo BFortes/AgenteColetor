@@ -64,13 +64,18 @@ public class Agente {
     return m_pos[1];
   }
   
+  public void SetPosicao (int[] pos) {
+  
+    m_pos = pos;
+  }
+  
   public List<String> Random_path(Ambiente ambiente) {
   
     List<String> movimentos = new ArrayList<>();
     
     while(!ambiente.AmbienteLimpo()) {
     
-      
+      Nodo nodoAgente = ambiente.GetNodo(m_pos);
     }
     
     return movimentos;

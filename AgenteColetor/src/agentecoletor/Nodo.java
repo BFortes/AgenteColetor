@@ -6,7 +6,7 @@ package agentecoletor;
  */
 public class Nodo {
     
-  public enum EstadosNodo { celulaVazia, celulaSuja, parede, lixeira, recarga, agente }
+  public enum EstadosNodo { celulaVazia, celulaSuja, parede, lixeira, recarga }
 
   private EstadosNodo m_estado;
   private String tipo = "[ ]";
@@ -35,7 +35,6 @@ public class Nodo {
       case parede:      tipo = "[X]"; break;
       case lixeira:     tipo = "[L]"; break;
       case recarga:     tipo = "[R]"; break;
-      case agente:      tipo = "[A]"; break;
     }
   }
 
@@ -46,8 +45,7 @@ public class Nodo {
   
   public boolean bloqueado() {
     
-    return m_estado == EstadosNodo.agente 
-        || m_estado == EstadosNodo.parede
+    return m_estado == EstadosNodo.parede
         || m_estado == EstadosNodo.lixeira
         || m_estado == EstadosNodo.recarga;
   }

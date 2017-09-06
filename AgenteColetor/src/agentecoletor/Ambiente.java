@@ -67,8 +67,7 @@ public class Ambiente {
     colocarRecargas();
 
     jamesBond = agente;
-    m_matriz[agente.getPosicao()[0]][agente.getPosicao()[1]].SetEstado(Nodo.EstadosNodo.agente);
-
+    
     desenhaAmbiente();    
   }
 
@@ -142,6 +141,11 @@ public class Ambiente {
     System.out.print("\n");
   }
   
+  public Nodo GetNodo(int[] pos) {
+  
+    return m_matriz[pos[0]][pos[1]];
+  }
+  
   public List<Nodo> adjascentesDoAgente () {
 
     List<Nodo> nodosAdjascentes;
@@ -199,13 +203,13 @@ public class Ambiente {
     int x = nodo.GetPos()[0];
     int y = nodo.GetPos()[1];
     
-    if (x > 0 && m_matriz[x-1][y].ehParede() == false) // esquerda
+    if (x > 0 && m_matriz[x-1][y].bloqueado() == false) // esquerda
       vizinhos.add(m_matriz[x-1][y]);
-    if (x < (tamanho-1) && m_matriz[x+1][y].ehParede() == false) // direita
+    if (x < (tamanho-1) && m_matriz[x+1][y].bloqueado() == false) // direita
       vizinhos.add(m_matriz[x+1][y]);
-    if (y > 0 && m_matriz[x][y-1].ehParede() == false) // cima
+    if (y > 0 && m_matriz[x][y-1].bloqueado() == false) // cima
       vizinhos.add(m_matriz[x][y-1]);
-    if (y < (tamanho-1) && m_matriz[x][y+1].ehParede() == false) // baixo
+    if (y < (tamanho-1) && m_matriz[x][y+1].bloqueado() == false) // baixo
       vizinhos.add(m_matriz[x][y+1]);
     
     return vizinhos;
