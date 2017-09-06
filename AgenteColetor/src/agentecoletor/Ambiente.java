@@ -76,6 +76,13 @@ public class Ambiente {
     return totalLixo == 0;
   }
   
+  public void LimparCelula(int[] pos) {
+  
+    m_matriz[pos[0]][pos[1]].limpar();
+    
+    totalLixo--;
+  }
+  
   public void colocarLixeiras() {
     
     // System.out.print("Número de lixeiras: " + qtdLixeiras + "\n");

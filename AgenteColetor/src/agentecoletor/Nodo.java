@@ -6,7 +6,7 @@ package agentecoletor;
  */
 public class Nodo {
     
-  public enum EstadosNodo { celulaVazia, celulaSuja, parede, lixeira, recarga }
+  public enum EstadosNodo { celulaVazia, celulaSuja, parede, lixeira, recarga, agente }
 
   private EstadosNodo m_estado;
   private String tipo = "[ ]";
@@ -17,8 +17,12 @@ public class Nodo {
 
   private int[] m_posicao;
   
+  private boolean m_visitado;
+  
   public Nodo (int[] pos){
 
+    m_visitado = false;
+    
     m_posicao = pos;
     
     SetEstado(EstadosNodo.celulaVazia);
@@ -35,30 +39,35 @@ public class Nodo {
       case parede:      tipo = "[X]"; break;
       case lixeira:     tipo = "[L]"; break;
       case recarga:     tipo = "[R]"; break;
+      case agente:      tipo = "[A]"; break;
     }
   }
 
-  public int[] GetPos() {
-  
-    return m_posicao;
-  }
+  public int[] GetPos() { return m_posicao; }
   
   public boolean bloqueado() {
     
-    return m_estado == EstadosNodo.parede
+    return m_estado == EstadosNodo.agente
+        || m_estado == EstadosNodo.parede
         || m_estado == EstadosNodo.lixeira
         || m_estado == EstadosNodo.recarga;
   }
   
-  public boolean estaVazio() {
- 
-    return m_estado == EstadosNodo.celulaVazia;
-  }
+  public boolean estaVazio() { return m_estado == EstadosNodo.celulaVazia; }
 
-  public boolean ehParede() {
+  public boolean ehParede() { return m_estado == EstadosNodo.parede; }
   
-    return m_estado == EstadosNodo.parede;
+  public boolean estaSujo() { return m_estado == EstadosNodo.celulaSuja; }
+  
+  public void colocarAgente() { 
+    
+    m_visitado = true; 
+    SetEstado(EstadosNodo.agente); 
   }
+  
+  public void limpar() { SetEstado(EstadosNodo.celulaVazia); }
+  
+  public boolean jaVisitado() { return m_visitado; }
   
   public void SetCusto(int custoG, int custoH) {
 

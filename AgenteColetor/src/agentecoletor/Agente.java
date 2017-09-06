@@ -64,9 +64,11 @@ public class Agente {
     return m_pos[1];
   }
   
-  public void SetPosicao (int[] pos) {
-  
-    m_pos = pos;
+  public void SetPosicao (Nodo nodoCur, Nodo nodoNovo) {
+    
+    nodoCur.SetEstado(Nodo.EstadosNodo.celulaVazia);
+    
+    m_pos = nodoNovo.GetPos();
   }
   
   public List<String> Random_path(Ambiente ambiente) {
@@ -75,7 +77,30 @@ public class Agente {
     
     while(!ambiente.AmbienteLimpo()) {
     
-      Nodo nodoAgente = ambiente.GetNodo(m_pos);
+      Nodo nodoCur = ambiente.GetNodo(m_pos);
+      
+      if(nodoCur.estaSujo())
+        ambiente.LimparCelula(m_pos);
+
+      if(nodoCur.estaVazio())
+        nodoCur.colocarAgente();
+      
+      if(ambiente.AmbienteLimpo())
+        break;
+      
+      List<Nodo> vizinhos = ambiente.GetVizinhos(nodoCur);
+      
+      for(int n = 0; n < vizinhos.size(); n++) {
+        
+        Nodo vizinho = vizinhos.get(n);
+        
+        if(!vizinho.jaVisitado() && (vizinho.GetPos()[0] > nodoCur.GetPos()[0] && vizinho.GetPos()[1] == nodoCur.GetPos()[1])) {
+          
+          SetPosicao(nodoCur, vizinho);
+        }
+      }
+      
+      ambiente.desenhaAmbiente();
     }
     
     return movimentos;
