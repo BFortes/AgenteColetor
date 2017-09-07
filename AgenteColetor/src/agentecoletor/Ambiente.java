@@ -1,5 +1,3 @@
-package agentecoletor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +10,14 @@ public class Ambiente {
 
   private Nodo[][] m_matriz;
   private int tamanho, qtdLixeiras, qtdRecargas, totalLixo;
-  private Agente jamesBond;
 
-  public Ambiente(Agente agente, int tamanho, int qtdLixeiras, int qtdRecargas) {
+  public Ambiente(int tamanho, int qtdLixeiras, int qtdRecargas) {
 
     this.tamanho = tamanho;
     this.qtdLixeiras = qtdLixeiras;
     this.qtdRecargas = qtdRecargas;
+
+    totalLixo = 0;
 
     System.out.print("Total de Células: " + tamanho * tamanho + "\n");
 
@@ -26,13 +25,10 @@ public class Ambiente {
     System.out.print("Porcentagem de lixo: " + qtdLixoPorcentagem + "\n");
 
     int totalCelulasLixo = (int)( (tamanho*tamanho) * (qtdLixoPorcentagem/100));
-    System.out.print("Células com Lixo: " + totalCelulasLixo + "\n");
 
-    totalLixo = totalCelulasLixo;
-    
     m_matriz = new Nodo[tamanho][tamanho];
 
-    for(int i = 0; i < tamanho; i++) { //i: linha, j: coluna
+    for(int i = 0; i < tamanho; i++) { //i: coluna, j: linha
 
       for(int j = 0; j < tamanho; j++) {
         
@@ -53,22 +49,22 @@ public class Ambiente {
           m_matriz[i][j].SetEstado(Nodo.EstadosNodo.parede);
 
         //colocar lixos
-
         else if((Math.random() * 1) > 0.5 && totalCelulasLixo > 0) {
 
           m_matriz[i][j].SetEstado(Nodo.EstadosNodo.celulaSuja);
           totalCelulasLixo--;
+
+          totalLixo++;
         }
-        
-        //aqui tinha um else pra botar celular vazias, mas agora elas são criadas já vazias, o que não alterado, é vazio
-      }    
+      }
     }
+
+    System.out.print("Células com Lixo: " + totalLixo + "\n");
+
     colocarLixeiras();
     colocarRecargas();
 
-    jamesBond = agente;
-    
-    desenhaAmbiente();    
+    desenhaAmbiente();
   }
 
   public boolean AmbienteLimpo() {
@@ -82,23 +78,36 @@ public class Ambiente {
     
     totalLixo--;
   }
-  
+
   public void colocarLixeiras() {
-    
+
     // System.out.print("Número de lixeiras: " + qtdLixeiras + "\n");
     while (qtdLixeiras > 0) {
 
       for(int i = 0; i < tamanho; i++) {
-        
+
         for(int j = 0; j < tamanho; j++) {
-          
+
           //System.out.print("Colocar Lixeiras    I: " + i + "    J:" + j+ "\n");
-          if ((i > 2 && i <tamanho-3)          //dentro das linhas das paredes 
+          if ((i > 2 && i <tamanho-3)          //dentro das linhas das paredes
                 && (j < 3 || j > tamanho-4)) { //dentro das colunas das paredes
-            
+
+            // tenta evitar colocar lixeiras perto de outras lixeiras e recargas
+            boolean vizinhosVazio = true;
+            for(Nodo v : GetTodosVizinhos(m_matriz[i][j])) {
+
+              if(v.GetEstado() == Nodo.EstadosNodo.recarga || v.GetEstado() == Nodo.EstadosNodo.lixeira) {
+
+                vizinhosVazio = false;
+
+                break;
+              }
+            }
+
             if((Math.random() * 1) > 0.7  //0,7 pra ficar mais espalhado
                   && m_matriz[i][j].estaVazio()
-                    && qtdLixeiras > 0) {  
+                    && vizinhosVazio
+                      && qtdLixeiras > 0) {
               
               m_matriz[i][j].SetEstado(Nodo.EstadosNodo.lixeira);
               qtdLixeiras--;
@@ -121,9 +130,22 @@ public class Ambiente {
           if ((i > 2 && i <tamanho-3)          //dentro das linhas das paredes 
                 && (j < 3 || j > tamanho-4)) { //dentro das colunas das paredes
 
+            // tenta evitar colocar recargas perto de outras lixeiras e recargas
+            boolean vizinhosVazio = true;
+            for(Nodo v : GetTodosVizinhos(m_matriz[i][j])) {
+
+              if(v.GetEstado() == Nodo.EstadosNodo.recarga || v.GetEstado() == Nodo.EstadosNodo.lixeira) {
+
+                vizinhosVazio = false;
+
+                break;
+              }
+            }
+
             if((Math.random() * 1) > 0.7       //0,7 pra ficar mais espalhado
                   && m_matriz[i][j].estaVazio()
-                    && qtdRecargas>0) { 
+                    && vizinhosVazio
+                      && qtdRecargas>0) {
 
               m_matriz[i][j].SetEstado(Nodo.EstadosNodo.recarga);
               qtdRecargas--;
@@ -152,73 +174,75 @@ public class Ambiente {
   
     return m_matriz[pos[0]][pos[1]];
   }
-  
-  public List<Nodo> adjascentesDoAgente () {
 
-    List<Nodo> nodosAdjascentes;
-    nodosAdjascentes = new ArrayList<Nodo>();
-    int posicaoI = jamesBond.getPosicaoI();
-    int posicaoJ = jamesBond.getPosicaoJ();
+  // pega os vizinhos que podem ser acessados
+  public List<Nodo> GetVizinhos(Nodo nodo, boolean diagonal) {
+    
+    List<Nodo> vizinhos = new ArrayList<>();
+    int i = nodo.GetPos()[0]; // y
+    int j = nodo.GetPos()[1]; // x
 
-    //nodos superiores
-    if (posicaoI != 0) {//se não está na primeira linha, tem nodos em cima
-      
-      nodosAdjascentes.add(m_matriz[posicaoI+1][posicaoJ]);
+    if (j < (tamanho-1) && !m_matriz[i][j+1].bloqueado()) // direita
+      vizinhos.add(m_matriz[i][j+1]);
 
-      if (posicaoJ != 0) {//se não está primeira coluna, tem nodos em cima a esquerda 
+    if (i < (tamanho-1) && !m_matriz[i+1][j].bloqueado()) // baixo
+      vizinhos.add(m_matriz[i+1][j]);
 
-        nodosAdjascentes.add(m_matriz[posicaoI+1][posicaoJ-1]);
-      }
-      if (posicaoJ != tamanho-1) {//se não está ultima coluna, tem nodos em cima a direita 
-        
-        nodosAdjascentes.add(m_matriz[posicaoI+1][posicaoJ+1]);
-      }
+    if (j > 0 && !m_matriz[i][j-1].bloqueado()) // esquerda
+      vizinhos.add(m_matriz[i][j-1]);
+
+    if (i > 0 && !m_matriz[i-1][j].bloqueado()) // cima
+      vizinhos.add(m_matriz[i-1][j]);
+
+    if(diagonal) {
+
+      if (i > 0 && j < (tamanho-1) && !m_matriz[i-1][j+1].bloqueado()) // direita cima
+        vizinhos.add(m_matriz[i-1][j+1]);
+
+      if (i < (tamanho-1) && j < (tamanho-1) && !m_matriz[i+1][j+1].bloqueado()) // direita baixo
+        vizinhos.add(m_matriz[i+1][j+1]);
+
+      if (i > 0 && j > 0 && !m_matriz[i-1][j-1].bloqueado()) // esquerda cima
+        vizinhos.add(m_matriz[i-1][j-1]);
+
+      if (i > (tamanho-1) && j > 0 && !m_matriz[i+1][j-1].bloqueado()) // esquerda baixo
+        vizinhos.add(m_matriz[i+1][j-1]);
     }
 
-    //nodos inferiores
-    if (posicaoI != tamanho-1) {//se não está na ultima linha, tem nodos embaixo
-      
-      nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ]);
-      
-      if (posicaoJ != 0) {//se não está primeira coluna, tem nodos embaixo a esquerda 
-        
-          nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ-1]);
-      }
-      if (posicaoJ != tamanho-1) {//se não está ultima coluna, tem nodos embaixo a direita 
-        
-          nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ+1]);
-      }
-    }
-
-    //nodos laterais
-    if (posicaoJ != 0){ //se não está primeira coluna, tem nodos a esquerda 
-      
-      nodosAdjascentes.add(m_matriz[posicaoI-1][posicaoJ]);
-    }
-    if (posicaoJ != 0) { //se não está ultima coluna, tem nodos a direita 
-      
-      nodosAdjascentes.add(m_matriz[posicaoI+1][posicaoJ]);
-    }
-
-    return nodosAdjascentes;
+    return vizinhos;
   }
-  
-  //sem diagonal
-  public List<Nodo> GetVizinhos(Nodo nodo) {
-    
-    List<Nodo> vizinhos = new ArrayList<Nodo>();
-    int x = nodo.GetPos()[0];
-    int y = nodo.GetPos()[1];
-    
-    if (x > 0 && m_matriz[x-1][y].bloqueado() == false) // esquerda
-      vizinhos.add(m_matriz[x-1][y]);
-    if (x < (tamanho-1) && m_matriz[x+1][y].bloqueado() == false) // direita
-      vizinhos.add(m_matriz[x+1][y]);
-    if (y > 0 && m_matriz[x][y-1].bloqueado() == false) // cima
-      vizinhos.add(m_matriz[x][y-1]);
-    if (y < (tamanho-1) && m_matriz[x][y+1].bloqueado() == false) // baixo
-      vizinhos.add(m_matriz[x][y+1]);
-    
+
+  // pega todos os vizinhos sem excecao
+  public List<Nodo> GetTodosVizinhos(Nodo nodo) {
+
+    List<Nodo> vizinhos = new ArrayList<>();
+    int i = nodo.GetPos()[0]; // y
+    int j = nodo.GetPos()[1]; // x
+
+    if (j < (tamanho-1)) // direita
+      vizinhos.add(m_matriz[i][j+1]);
+
+    if (i < (tamanho-1)) // baixo
+      vizinhos.add(m_matriz[i+1][j]);
+
+    if (j > 0) // esquerda
+      vizinhos.add(m_matriz[i][j-1]);
+
+    if (i > 0) // cima
+      vizinhos.add(m_matriz[i-1][j]);
+
+    if (i > 0 && j < (tamanho-1)) // direita cima
+      vizinhos.add(m_matriz[i-1][j+1]);
+
+    if (i < (tamanho-1) && j < (tamanho-1)) // direita baixo
+      vizinhos.add(m_matriz[i+1][j+1]);
+
+    if (i > 0 && j > 0) // esquerda cima
+      vizinhos.add(m_matriz[i-1][j-1]);
+
+    if (i < (tamanho-1) && j > 0) // esquerda baixo
+      vizinhos.add(m_matriz[i+1][j-1]);
+
     return vizinhos;
   }
 }

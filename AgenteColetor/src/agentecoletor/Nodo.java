@@ -1,5 +1,3 @@
-package agentecoletor;
-
 /**
  *
  * @author BrunoPaz e MarlonFontoura
@@ -16,6 +14,8 @@ public class Nodo {
   private int m_custoF;
 
   private int[] m_posicao;
+  public int m_posI;
+  public int m_posJ;
   
   private boolean m_visitado;
   
@@ -24,6 +24,8 @@ public class Nodo {
     m_visitado = false;
     
     m_posicao = pos;
+    m_posI = pos[0];
+    m_posJ = pos[1];
     
     SetEstado(EstadosNodo.celulaVazia);
   }
@@ -43,30 +45,26 @@ public class Nodo {
     }
   }
 
+  public EstadosNodo GetEstado() { return m_estado; }
+
   public int[] GetPos() { return m_posicao; }
   
   public boolean bloqueado() {
     
-    return m_estado == EstadosNodo.agente
-        || m_estado == EstadosNodo.parede
+    return m_estado == EstadosNodo.parede
         || m_estado == EstadosNodo.lixeira
         || m_estado == EstadosNodo.recarga;
   }
-  
-  public boolean estaVazio() { return m_estado == EstadosNodo.celulaVazia; }
 
   public boolean ehParede() { return m_estado == EstadosNodo.parede; }
-  
+
+  public boolean estaVazio() { return m_estado == EstadosNodo.celulaVazia; }
+
   public boolean estaSujo() { return m_estado == EstadosNodo.celulaSuja; }
-  
-  public void colocarAgente() { 
-    
-    m_visitado = true; 
-    SetEstado(EstadosNodo.agente); 
-  }
-  
-  public void limpar() { SetEstado(EstadosNodo.celulaVazia); }
-  
+
+  public void limpar() { SetEstado(EstadosNodo.agente); }
+
+  public void setVisitado() { m_visitado = true; }
   public boolean jaVisitado() { return m_visitado; }
   
   public void SetCusto(int custoG, int custoH) {
@@ -78,6 +76,10 @@ public class Nodo {
   }
 
   public String ToString() {
+
+    if(m_visitado && m_estado == EstadosNodo.celulaVazia)
+      tipo = "[']";
+
 
     return tipo;
   }

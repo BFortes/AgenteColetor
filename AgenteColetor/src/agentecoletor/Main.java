@@ -1,5 +1,3 @@
-package agentecoletor;
-
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,8 +12,8 @@ public class Main {
       
 
     int tamanho = 12;
-    int lixeiras = 5;
-    int recargas = 7;
+    int lixeiras = 3;
+    int recargas = 3;
     
     /*
     Scanner scanner = new Scanner(System.in);  
@@ -36,10 +34,9 @@ public class Main {
     posicaoInicialAgente[0] = 0;//linha
     posicaoInicialAgente[1] = 0;//coluna
 
-    Agente agente = new Agente(posicaoInicialAgente, 100, 100);
+    Ambiente ambiente = new Ambiente(tamanho, lixeiras, recargas);
 
-    Ambiente ambiente = new Ambiente(agente, tamanho, lixeiras, recargas);
-
+    Agente agente = new Agente(posicaoInicialAgente, 10, 100);
     List<String> movimeltons = agente.Random_path(ambiente);
     //int[] movieltons = agente.A_Star_path();
 

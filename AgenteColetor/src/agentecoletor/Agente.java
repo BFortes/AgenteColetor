@@ -1,4 +1,3 @@
-package agentecoletor;
 import java.util.PriorityQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,37 +69,86 @@ public class Agente {
     
     m_pos = nodoNovo.GetPos();
   }
-  
+
   public List<String> Random_path(Ambiente ambiente) {
   
     List<String> movimentos = new ArrayList<>();
-    
+
+    Nodo ultimoNodo = null;   // ultimo nodo visitado;
+
     while(!ambiente.AmbienteLimpo()) {
     
-      Nodo nodoCur = ambiente.GetNodo(m_pos);
-      
-      if(nodoCur.estaSujo())
+      Nodo curNodo = ambiente.GetNodo(m_pos);
+      curNodo.setVisitado();
+
+      if(curNodo.estaSujo())
         ambiente.LimparCelula(m_pos);
 
-      if(nodoCur.estaVazio())
-        nodoCur.colocarAgente();
-      
+      curNodo.SetEstado(Nodo.EstadosNodo.agente);
+
+      ambiente.desenhaAmbiente();
+
       if(ambiente.AmbienteLimpo())
         break;
-      
-      List<Nodo> vizinhos = ambiente.GetVizinhos(nodoCur);
-      
+
+      List<Nodo> vizinhos = ambiente.GetVizinhos(curNodo, false);
+      Nodo destino = null;
+
       for(int n = 0; n < vizinhos.size(); n++) {
         
         Nodo vizinho = vizinhos.get(n);
-        
-        if(!vizinho.jaVisitado() && (vizinho.GetPos()[0] > nodoCur.GetPos()[0] && vizinho.GetPos()[1] == nodoCur.GetPos()[1])) {
-          
-          SetPosicao(nodoCur, vizinho);
+
+        if(vizinhos.size() == 1) { // nao tem escolha
+
+          destino = vizinho;
+
+          if(!vizinho.jaVisitado())
+            break;
+        }
+        else { // escolhe um nodo diferente do anterior
+
+          if(ultimoNodo != null && vizinho.m_posI == ultimoNodo.m_posI && vizinho.m_posJ == ultimoNodo.m_posJ)
+            continue;
+
+          if(vizinho.m_posJ > curNodo.m_posJ && vizinho.m_posI == curNodo.m_posI) { // direita
+
+            destino = vizinho;
+
+            if(!vizinho.jaVisitado())
+              break;
+          }
+          else if(vizinho.m_posI > curNodo.m_posI && vizinho.m_posJ == curNodo.m_posJ) { // baixo
+
+            destino = vizinho;
+
+            if(!vizinho.jaVisitado())
+              break;
+          }
+          else if(vizinho.m_posJ < curNodo.m_posJ && vizinho.m_posI == curNodo.m_posI) { // esquerda
+
+            destino = vizinho;
+
+            if(!vizinho.jaVisitado())
+              break;
+          }
+          else if(vizinho.m_posI < curNodo.m_posI && vizinho.m_posJ == curNodo.m_posJ) { // cima
+
+            destino = vizinho;
+
+            if(!vizinho.jaVisitado())
+              break;
+          }
         }
       }
-      
-      ambiente.desenhaAmbiente();
+
+      if(destino != null) { // executa uma acao se ele existir
+
+        ultimoNodo = curNodo;
+
+        SetPosicao(curNodo, destino);
+
+        //ambiente.desenhaAmbiente();
+      }
     }
     
     return movimentos;
