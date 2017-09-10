@@ -6,6 +6,8 @@ public class Nodo {
     
   public enum EstadosNodo { celulaVazia, celulaSuja, parede, lixeira, recarga, agente }
 
+  public Nodo origem = null;
+
   private EstadosNodo m_estado;
   private String tipo = "[ ]";
 
@@ -13,19 +15,19 @@ public class Nodo {
   private int m_custoH;
   private int m_custoF;
 
-  private int[] m_posicao;
+  private Point m_posicao;
   public int m_posI;
   public int m_posJ;
   
   private boolean m_visitado;
   
-  public Nodo (int[] pos){
+  public Nodo (Point pos) {
 
     m_visitado = false;
     
     m_posicao = pos;
-    m_posI = pos[0];
-    m_posJ = pos[1];
+    m_posI = pos.i;
+    m_posJ = pos.j;
     
     SetEstado(EstadosNodo.celulaVazia);
   }
@@ -47,7 +49,7 @@ public class Nodo {
 
   public EstadosNodo GetEstado() { return m_estado; }
 
-  public int[] GetPos() { return m_posicao; }
+  public Point GetPos() { return m_posicao; }
   
   public boolean bloqueado() {
     
@@ -66,13 +68,24 @@ public class Nodo {
 
   public void setVisitado() { m_visitado = true; }
   public boolean jaVisitado() { return m_visitado; }
-  
+
+  public int GetCustoH() { return m_custoH; }
+  public int GetCustoG() { return m_custoG; }
+  public int GetCustoF() { return m_custoF; }
+
   public void SetCusto(int custoG, int custoH) {
 
     m_custoG = custoG;
     m_custoH = custoH;
 
     m_custoF = m_custoG + m_custoH;
+  }
+
+  public void ResetNodo() {
+
+    origem = null;
+
+    SetCusto(0,0);
   }
 
   public String ToString() {
