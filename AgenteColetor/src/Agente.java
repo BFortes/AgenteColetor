@@ -1,5 +1,3 @@
-import com.sun.deploy.util.StringUtils;
-
 import java.util.PriorityQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,21 +9,13 @@ import java.util.Comparator;
  */
 
 public class Agente {
-    
-  public enum EstadosAgente { 
-                              Ocioso, Andando, AndandoUltimaCelulaVisitada, 
-                              VisitandoCelula, RecolhendoLixo, JogandoLixoFora, 
-                              Recarregando
-                            }
-
-  private EstadosAgente m_estadoAtual;
-
+  
   private Point m_pos;
   private int m_repositorio;
   private int m_bateria;
 
-  private int m_totalRepositorio;
-  private int m_totalBateria;
+  private final int m_totalRepositorio;
+  private final int m_totalBateria;
 
   private final int MIN_BATERIA = 20;
 
@@ -37,26 +27,6 @@ public class Agente {
     m_totalBateria = tamBateria;
     m_repositorio = 0;
     m_bateria     = tamBateria;
-
-    EntrarEstado(EstadosAgente.Ocioso);
-  }
-
-  public void EntrarEstado(EstadosAgente novoEstado) {
-
-    m_estadoAtual = novoEstado;
-
-    switch(m_estadoAtual) {
-
-      case Ocioso: {
-
-      }
-      break;
-
-      case Andando: {
-
-      }
-      break;
-    }
   }
 
   public Point getPosicao() {
