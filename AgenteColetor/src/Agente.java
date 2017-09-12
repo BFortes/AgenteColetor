@@ -2,6 +2,7 @@ import java.util.PriorityQueue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Stack;
 
 /**
  *
@@ -61,27 +62,30 @@ public class Agente {
     m_bateria--;
   }
 
-  public void Random_path(Ambiente ambiente) throws CloneNotSupportedException{
-  
-    List<String> movimentos = new ArrayList<>();
-
-    Nodo ultimoNodo = null;   // ultimo nodo visitado;
-
-    while(!ambiente.AmbienteLimpo()) {
+  public void DFS_path(Ambiente ambiente) throws CloneNotSupportedException {
     
-      Nodo curNodo = ambiente.GetNodo(m_pos);
-      curNodo.setVisitado();
-
-      if(curNodo.estaSujo())
+    Stack stack = new Stack();
+    
+    Nodo nodoRaiz = ambiente.GetNodo(m_pos);
+		nodoRaiz.setVisitado();
+    
+    stack.push(nodoRaiz);
+    
+		while(!stack.isEmpty()) {
+      
+			Nodo nodoCur = (Nodo)stack.peek();
+			Nodo nodoFilho = null;
+      
+      if(nodoCur.estaSujo())
         limpaLixo(ambiente);
-
-      curNodo.SetEstado(Nodo.EstadosNodo.agente);
-
+      
+      nodoCur.SetEstado(Nodo.EstadosNodo.agente);
+      
       ambiente.desenhaAmbiente();
-
+      
       if(ambiente.AmbienteLimpo())
         break;
-
+      
       // A*
       if(m_bateria <= MIN_BATERIA) {
 
@@ -116,68 +120,34 @@ public class Agente {
           System.exit(0);
         }
       }
-
-      List<Nodo> vizinhos = ambiente.GetVizinhos(curNodo, false);
-      Nodo destino = null;
-
+      
+      List<Nodo> vizinhos = ambiente.GetVizinhos(nodoCur, false);
       for(int n = 0; n < vizinhos.size(); n++) {
-        
+      
         Nodo vizinho = vizinhos.get(n);
-
-        if(vizinhos.size() == 1) { // nao tem escolha
-
-          destino = vizinho;
-
-          if(!vizinho.jaVisitado())
-            break;
-        }
-        else { // escolhe um nodo diferente do anterior
-
-          if(ultimoNodo != null && vizinho.m_posI == ultimoNodo.m_posI && vizinho.m_posJ == ultimoNodo.m_posJ)
-            continue;
-
-          if(vizinho.m_posJ > curNodo.m_posJ && vizinho.m_posI == curNodo.m_posI) { // direita
-
-            destino = vizinho;
-
-            if(!vizinho.jaVisitado())
-              break;
-          }
-          else if(vizinho.m_posI > curNodo.m_posI && vizinho.m_posJ == curNodo.m_posJ) { // baixo
-
-            destino = vizinho;
-
-            if(!vizinho.jaVisitado())
-              break;
-          }
-          else if(vizinho.m_posJ < curNodo.m_posJ && vizinho.m_posI == curNodo.m_posI) { // esquerda
-
-            destino = vizinho;
-
-            if(!vizinho.jaVisitado())
-              break;
-          }
-          else if(vizinho.m_posI < curNodo.m_posI && vizinho.m_posJ == curNodo.m_posJ) { // cima
-
-            destino = vizinho;
-
-            if(!vizinho.jaVisitado())
-              break;
-          }
+        if(!vizinho.jaVisitado()) {
+          
+          nodoFilho = vizinho;
+          break;
         }
       }
-
-      if(destino != null) { // executa uma acao se ela existir
-
-        ultimoNodo = curNodo;
-
-        SetPosicao(curNodo, destino);
-
-        //ambiente.desenhaAmbiente();
-      }
-    }
+      
+			if(nodoFilho != null) {
+        
+        SetPosicao(nodoCur, nodoFilho);
+        
+				nodoFilho.setVisitado();
+				stack.push(nodoFilho);
+			}
+			else {
+        
+        nodoCur.SetEstado(Nodo.EstadosNodo.celulaVazia);
+        
+				stack.pop();
+			}
+		}
   }
-
+  
   public boolean A_Star_path(Ambiente ambiente, Point origem, Point destino) {
 
     System.out.print("****** Origem: " + origem.ToString() + " Destino: " + destino.ToString() + " ******");
@@ -203,6 +173,7 @@ public class Agente {
       Nodo curNodo = listaAberta.poll();
       listaFechada.add(curNodo);
 
+      // agente esta ao lado do destino
       if(manhattan_distance(curNodo.GetPos(), destino) == 1) {
 
         ambiente.GetCaminho(curNodo);
@@ -211,12 +182,15 @@ public class Agente {
       }
 
       for(Nodo n : ambiente.GetVizinhos(curNodo, false)) {
-
+        
+        // calcula o custo do movimento ate este vizinho
         int custoG = curNodo.GetCustoG() + manhattan_distance(curNodo.GetPos(), n.GetPos());
 
+        // caso este vizinho ja tenha sido explorado, e ja faça parte de um caminho com custo menor, ignora este passo.
         if(listaFechada.contains(n) && custoG >= n.GetCustoG())
           continue;
 
+        // se este vizinho nunca foi visitado ou seu custo de movimento for melhor que o já calculado antes, atualiza nodo e listaaberta
         if(!listaFechada.contains(n) || custoG < n.GetCustoG()) {
 
           n.origem = curNodo;
